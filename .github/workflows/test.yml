@@ -9,6 +9,7 @@ on:
       - 'docker/**'
       - '**.sh'
       - '**.json'
+      - '**.yml'
 
 jobs:
   build:
@@ -19,10 +20,10 @@ jobs:
       matrix:
        include:
         #  两行一组，删除不需要的版本
-         - platform: ds3617xs
-           version: 6.2.4-25556
          - platform: ds918p
            version: 7.0.1-42218
+         - platform: ds3617xs
+           version: 6.2.4-25556
          - platform: ds3617xs
            version: 7.0.1-42218
 
@@ -47,7 +48,7 @@ jobs:
           cp sample_user_config.json ${{matrix.platform}}_user_config.json
 
           # 调整VID和PID
-          sed -i -e 's/0x0001/0x88AA/g' -e 's/0x46f4/0x88AA/g' ${{matrix.platform}}_user_config.json
+          sed -i -e 's/0x0001/0x058f/g' -e 's/0x46f4/0x6387/g' ${{matrix.platform}}_user_config.json
 
           # 调整SN和MAC,最好使用 actions secrets 引入,SN应该是固定值不应该每次生成
           sn=`./redpill_tool_chain.sh sn ${{matrix.platform}} | grep 'Serial Number' | awk '{print $3}'`
@@ -67,6 +68,7 @@ jobs:
           ./redpill_tool_chain.sh add https://github.com/jumkey/redpill-load/raw/develop/redpill-boot-wait/rpext-index.json
           ./redpill_tool_chain.sh add https://github.com/jumkey/redpill-load/raw/develop/redpill-acpid/rpext-index.json
           ./redpill_tool_chain.sh add https://github.com/jumkey/redpill-load/raw/develop/redpill-virtio/rpext-index.json
+          ./redpill_tool_chain.sh add https://github.com/pocopico/rp-ext/raw/main/r8168/rpext-index.json
 
       - name: 添加扩展驱动[dva3221]
         if: matrix.platform == 'dva3221'
